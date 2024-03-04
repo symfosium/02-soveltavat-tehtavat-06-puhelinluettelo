@@ -50,8 +50,30 @@ function App() {
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson));
+        setNewName('')
+        setNewNumber('')
       })
     }
+
+  }
+
+  const handleDelete = (id, name) => {
+    const confirm = window.confirm(`Do you want to remove ${name}?`);
+
+    if (!confirm) {
+      return
+    }
+
+    personService
+      .removePerson(id)
+      .then(response => {
+        const filteredPersons = persons.filter(person => person.id !== id);
+        setPersons(filteredPersons);
+
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
 
@@ -68,7 +90,7 @@ function App() {
       addNewPerson={addNewPerson}
     />
     <h2>Numbers</h2>
-    <Persons filteredPersons={filteredPersons}/>
+    <Persons filteredPersons={filteredPersons} handleDelete={handleDelete}/>
     </div>
   )
 }
