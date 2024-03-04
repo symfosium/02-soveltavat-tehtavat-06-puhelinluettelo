@@ -19,14 +19,13 @@ function App() {
     .then(initialPersons => {
       setPersons(initialPersons)
     })
-  })
+  }, [])
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   }
 
-  const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()));
-
+  const filteredPersons = 
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -43,8 +42,24 @@ function App() {
       number: newNumber,
     }
 
-    if (persons.some(person => person.name === personObject.name)) {
-      alert(`${newName} is already added to phonebook`);
+    const existingPerson = persons.find(person => person.name === personObject.name);
+
+
+    if (existingPerson) {
+      const confirm = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`);
+      personService
+      .changePersonNumber(existingPerson.id, newNumber)
+      .then(updatedPerson => {
+        setPersons(persons.map(person =>
+          person.id !== existingPerson.id ? person : updatedPerson
+        ));
+        setNewName('');
+        setNewNumber('');
+      })
+      .catch(error => {
+        console.error('Error changing number:', error);
+      });
+
     } else {
       personService
       .create(personObject)
