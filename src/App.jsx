@@ -19,13 +19,14 @@ function App() {
     .then(initialPersons => {
       setPersons(initialPersons)
     })
-  }, [])
+  })
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   }
 
-  const filteredPersons = 
+  const filteredPersons = persons.filter(person => person.name && person.name.toLowerCase().includes(filter.toLowerCase()));
+
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -37,30 +38,31 @@ function App() {
 
   const addNewPerson = (event) => {
     event.preventDefault();
-    const personObject = {
-      name: newName,
-      number: newNumber,
-    }
 
-    const existingPerson = persons.find(person => person.name === personObject.name);
-
-
-    if (existingPerson) {
-      const confirm = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`);
-      personService
-      .changePersonNumber(existingPerson.id, newNumber)
-      .then(updatedPerson => {
-        setPersons(persons.map(person =>
-          person.id !== existingPerson.id ? person : updatedPerson
-        ));
-        setNewName('');
-        setNewNumber('');
-      })
-      .catch(error => {
-        console.error('Error changing number:', error);
-      });
-
+    if (persons.some(person => person.name === newName)) {
+      const person = persons.find(person => person.name === newName);
+      const result = window.confirm(`${person.name} is already in your phonebook, do you want to replace the old phone number?`);
+      if (result) {
+        const changedPerson = {
+          ...person,
+          number: newNumber
+        }
+        personService
+          .changePersonNumber(person.id, changedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(pers => pers.id !== returnedPerson.id ? pers : returnedPerson));
+          })
+          .catch(error => {
+            console.log("Error", error);
+          })
+          setNewName('')
+          setNewNumber('')
+      }
     } else {
+      const personObject = {
+        name: newName,
+        number: newNumber,
+      }
       personService
       .create(personObject)
       .then(returnedPerson => {
