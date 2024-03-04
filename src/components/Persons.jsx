@@ -1,8 +1,10 @@
+import { v4 as uuidv4 } from 'uuid';
+
 const Persons = ({filteredPersons}) => {
    return (
       <ul>
       {filteredPersons.map(person => (
-      <li key={person.name}>{person.name} {person.number}</li>
+      <li key={uuidv4()}>{person.name} {person.number}</li>
   ))}
       </ul>
    )

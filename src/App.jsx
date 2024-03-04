@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import axios from 'axios';
-import './App.css'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
@@ -23,6 +22,7 @@ function App() {
       const eventHandler = response => {
         setPersons(response.data);
       }
+
       const promise = axios.get('http://localhost:3001/persons');
       promise.then(eventHandler);
   }, [])
@@ -51,6 +51,17 @@ function App() {
       setNewName('');
       setNewNumber('');
     }
+
+    const promise = axios.post('http://localhost:3001/persons', personObject);
+    promise
+      .then(response => {
+      console.log(response);
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+
   }
 
 
@@ -58,6 +69,7 @@ function App() {
     <div>
     <h2>Phonebook</h2>
     <Filter filter={filter} handleFilterChange={handleFilterChange}/>
+    <h3>Add a new</h3>
     <PersonForm 
       newName={newName}
       newNumber={newNumber}
