@@ -14,6 +14,7 @@ function App() {
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
   const [notification, setNotification] = useState(null);
+  const [notificationType, setNotificationType] = useState('');
 
   useEffect(() => {
     personService
@@ -23,8 +24,9 @@ function App() {
     })
   })
 
-  const handleNotifications = (message) => {
+  const handleNotifications = (message, type) => {
     setNotification(message);
+    setNotificationType(type);
     setTimeout(() => {
       setNotification(null)
     }, 5000)
@@ -64,6 +66,7 @@ function App() {
           })
           .catch(error => {
             console.log("Error", error);
+            handleNotifications(`Information of ${newName} has already been removed from server`, 'error');
           })
           setNewName('')
           setNewNumber('')
@@ -80,7 +83,7 @@ function App() {
         setNewName('')
         setNewNumber('')
         const message = `Added ${newName}`;
-        handleNotifications(message);
+        handleNotifications(message, 'success');
       })
     }
 
@@ -99,11 +102,12 @@ function App() {
         const filteredPersons = persons.filter(person => person.id !== id);
         setPersons(filteredPersons);
         const message = `Deleted ${response.name}`;
-        handleNotifications(message);
+        handleNotifications(message, 'success');
 
       })
       .catch(error => {
         console.log(error)
+        handleNotifications(message, 'error');
       })
   }
 
@@ -111,7 +115,7 @@ function App() {
   return (
     <div>
     <h2>Phonebook</h2>
-    <Notification message={notification}/>
+    <Notification message={notification} type={notificationType}/>
     <Filter filter={filter} handleFilterChange={handleFilterChange}/>
     <h3>Add a new</h3>
     <PersonForm 
